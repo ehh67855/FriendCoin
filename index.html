@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FriendCoin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FriendCoin</h1>
+            <p>Track favors among friends</p>
+        </header>
+        
+        <div id="auth-container">
+            <div id="when-signed-out">
+                <h2>Welcome to FriendCoin!</h2>
+                <p>Sign in to start tracking favors with your friends.</p>
+                <button id="sign-in">Sign In</button>
+                <button id="sign-up">Sign Up</button>
+            </div>
+            
+            <div id="when-signed-in" class="hidden">
+                <h2>Hello, <span id="user-name">Friend</span>!</h2>
+                <p>Your current balance: <span id="user-balance">0</span> FriendCoins</p>
+                <button id="send-coins">Send FriendCoins</button>
+                <button id="view-history">View History</button>
+                <button id="sign-out">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-firestore-compat.min.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="scripts/config.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>
