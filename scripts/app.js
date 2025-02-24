@@ -2,9 +2,15 @@
 const sendCoinsButton = document.getElementById('send-coins');
 const viewHistoryButton = document.getElementById('view-history');
 const userBalanceSpan = document.getElementById('user-balance');
+const addFriendButton = document.getElementById('add-friend');
+const viewFriendsButton = document.getElementById('view-friends');
 
 // Current user data
-let currentUser = null;
+let currentUser = {
+  id: null,
+  friends: [],
+  ...null
+};
 let userBalance = 0;
 let friends = [];
 
@@ -16,6 +22,7 @@ async function loadUserData(userId) {
     if (userDoc.exists) {
       currentUser = {
         id: userId,
+        friends: userDoc.data().friends || [],
         ...userDoc.data()
       };
       
@@ -221,3 +228,123 @@ viewHistoryButton.addEventListener('click', async () => {
     alert(`Error: ${error.message}`);
   }
 });
+
+// Add friend modal
+function showAddFriendModal() {
+  const modalHTML = `
+    <div id="add-friend-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Friend</h2>
+        <form id="add-friend-form">
+          <input type="email" id="friend-email" placeholder="Friend's Email" required>
+          <button type="submit">Add Friend</button>
+        </form>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  const modal = document.getElementById('add-friend-modal');
+  const closeButton = modal.querySelector('.close');
+  const form = document.getElementById('add-friend-form');
+
+  modal.style.display = 'block';
+
+  closeButton.onclick = () => modal.remove();
+  window.onclick = (e) => {
+    if (e.target === modal) modal.remove();
+  };
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const friendEmail = document.getElementById('friend-email').value;
+
+    try {
+      // Find user by email
+      const querySnapshot = await db.collection('users')
+        .where('email', '==', friendEmail)
+        .get();
+
+      if (querySnapshot.empty) {
+        alert('User not found');
+        return;
+      }
+
+      const friendDoc = querySnapshot.docs[0];
+      const friendId = friendDoc.id;
+
+      // Check if already friends
+      if (currentUser.friends.includes(friendId)) {
+        alert('Already friends with this user');
+        return;
+      }
+
+      // Add friend to both users' friend lists
+      await db.collection('users').doc(currentUser.id).update({
+        friends: firebase.firestore.FieldValue.arrayUnion(friendId)
+      });
+
+      await db.collection('users').doc(friendId).update({
+        friends: firebase.firestore.FieldValue.arrayUnion(currentUser.id)
+      });
+
+      currentUser.friends.push(friendId);
+      modal.remove();
+      alert('Friend added successfully!');
+    } catch (error) {
+      console.error('Error adding friend:', error);
+      alert('Error adding friend');
+    }
+  };
+}
+
+// View friends list
+function showFriendsList() {
+  if (!currentUser.friends.length) {
+    alert('No friends added yet');
+    return;
+  }
+
+  const loadFriends = async () => {
+    const friendsData = await Promise.all(
+      currentUser.friends.map(async (friendId) => {
+        const doc = await db.collection('users').doc(friendId).get();
+        return { id: doc.id, ...doc.data() };
+      })
+    );
+
+    const modalHTML = `
+      <div id="friends-list-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Your Friends</h2>
+          <div class="friends-list">
+            ${friendsData.map(friend => `
+              <div class="friend-item">
+                <span>${friend.displayName || friend.email}</span>
+                <button onclick="sendCoinsToFriend('${friend.id}')">Send Coins</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    const modal = document.getElementById('friends-list-modal');
+    const closeButton = modal.querySelector('.close');
+
+    modal.style.display = 'block';
+    closeButton.onclick = () => modal.remove();
+    window.onclick = (e) => {
+      if (e.target === modal) modal.remove();
+    };
+  };
+
+  loadFriends();
+}
+
+// Add event listeners
+addFriendButton.addEventListener('click', showAddFriendModal);
+viewFriendsButton.addEventListener('click', showFriendsList);

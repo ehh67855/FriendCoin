@@ -1,12 +1,12 @@
-// Your Firebase configuration
-// You'll need to replace these with your own Firebase project details
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD3qajHAhNFiNMztgn2hXA7PsRA-AvT4Uc",
+  authDomain: "friendcoin-6af52.firebaseapp.com",
+  projectId: "friendcoin-6af52",
+  storageBucket: "friendcoin-6af52.firebasestorage.app",
+  messagingSenderId: "31719242366",
+  appId: "1:31719242366:web:bcd5857ad801ccc928b62f",
+  measurementId: "G-9KV20603RS"
 };
 
 // Initialize Firebase
