@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "build": "mkdir -p dist && cp -R index.html scripts styles images dist/"
+  }
+}
