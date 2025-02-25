@@ -45,10 +45,22 @@ async function loadUserData(userId) {
 sendCoinsButton.addEventListener('click', () => {
   if (!currentUser) return;
   
-  // Create modal HTML with friend options
-  const friendOptions = friends.map(friend => 
-    `<option value="${friend.id}">${friend.displayName || friend.email}</option>`
-  ).join('');
+  if (!currentUser.friends?.length) {
+    alert('You need to add friends before you can send coins!');
+    return;
+  }
+  
+  // Filter friends list to only show actual friends
+  const friendOptions = friends
+    .filter(friend => currentUser.friends.includes(friend.id))
+    .map(friend => 
+      `<option value="${friend.id}">${friend.displayName || friend.email}</option>`
+    ).join('');
+  
+  if (!friendOptions) {
+    alert('No friends found');
+    return;
+  }
   
   const modalHTML = `
     <div id="send-coins-modal" class="modal">
